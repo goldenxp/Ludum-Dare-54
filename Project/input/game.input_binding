@@ -1,4 +1,36 @@
+key_trigger {
+  input: KEY_SPACE
+  action: "inkcontinue"
+}
+key_trigger {
+  input: KEY_1
+  action: "inkchoice1"
+}
+key_trigger {
+  input: KEY_2
+  action: "inkchoice2"
+}
+key_trigger {
+  input: KEY_3
+  action: "inkchoice3"
+}
 mouse_trigger {
   input: MOUSE_BUTTON_1
-  action: "touch"
+  action: "inkcontinue"
+}
+gamepad_trigger {
+  input: GAMEPAD_RPAD_DOWN
+  action: "inkcontinue"
+}
+gamepad_trigger {
+  input: GAMEPAD_RPAD_LEFT
+  action: "inkchoice1"
+}
+gamepad_trigger {
+  input: GAMEPAD_RPAD_UP
+  action: "inkchoice2"
+}
+gamepad_trigger {
+  input: GAMEPAD_RPAD_RIGHT
+  action: "inkchoice3"
 }

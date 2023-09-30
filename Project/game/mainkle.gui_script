@@ -1,0 +1,108 @@
+local ink = require "ink.story"
+
+function init(self)
+	-- Init nodes and message handling
+	self.text_node = gui.get_node("text")
+	self.choice1_node = gui.get_node("choice1")
+	self.choice2_node = gui.get_node("choice2")
+	self.choice3_node = gui.get_node("choice3")
+	gui.set_visible(self.choice1_node, false)
+	gui.set_visible(self.choice2_node, false)
+	gui.set_visible(self.choice3_node, false)
+
+	self.paragraph_index = 0
+	self.paragraph_texts = {}
+	self.choices_texts = {}
+	
+	msg.post(".", "acquire_input_focus")
+	
+	-- Load ink json file and display first entry
+	local inkres = sys.load_resource("/resources/story.json")
+	self.story = ink.create(inkres)
+	story_continue(self, 0)
+end
+
+function on_message(self, message_id, message, sender)
+	
+end
+
+function on_input(self, action_id, action)
+	if action_id == hash("inkcontinue") and action.pressed then
+		story_continue(self, 0)
+	end
+	
+	if action_id == hash("inkchoice1") and action.pressed then
+		story_continue(self, 1) 
+	end
+
+	if action_id == hash("inkchoice2") and action.pressed then
+		story_continue(self, 2) 
+	end
+
+	if action_id == hash("inkchoice3") and action.pressed then
+		story_continue(self, 3) 
+	end
+end
+
+---- 
+
+function story_continue(self, choice)
+	-- Ignore invalid choices
+	if choice > #self.choices_texts then
+		return
+	end
+	
+	local no_text = #self.paragraph_texts == 0
+	local at_fork = self.paragraph_index > #self.paragraph_texts
+	local choice_made = choice ~= 0 and at_fork
+
+	-- Show input buttons
+	if at_fork then
+		if (self.choices_texts[0] ~= nil) then
+			gui.set_visible(self.choice1_node, true)
+			gui.set_text(self.choice1_node, self.choices_texts[0])
+		end
+
+		if (self.choices_texts[1] ~= nil) then
+			gui.set_visible(self.choice2_node, true)
+			gui.set_text(self.choice2_node, self.choices_texts[1])
+		end
+
+		if (self.choices_texts[2] ~= nil) then
+			gui.set_visible(self.choice3_node, true)
+			gui.set_text(self.choice3_node, self.choices_texts[2])
+		end
+
+		gui.set_visible(self.text_node, false)
+	end
+
+	-- Refresh paragraphs (and options) if there are none or we just made a choice
+	if no_text or choice_made then
+		local paragraphs, choices = self.story.continue(choice)
+		self.paragraph_index = 1
+		-- Build cache of texts to show player as they make inputs
+		self.paragraph_texts = {}
+		for i, paragraph in ipairs(paragraphs) do
+			table.insert(self.paragraph_texts, paragraph.text)
+		end
+		-- Build cache of upcoming options
+		self.choices_texts = {}
+		for _, choice in ipairs(choices) do
+			table.insert(self.choices_texts, choice.text)
+		end
+	end
+
+	-- Update and increment paragraph text unless at choice fork
+	if (choice == 0 and at_fork == false) or (choice_made) then
+		if choice_made then
+			gui.set_visible(self.choice1_node, false)
+			gui.set_visible(self.choice2_node, false)
+			gui.set_visible(self.choice3_node, false)
+
+			gui.set_visible(self.text_node, true)
+		end
+		
+		gui.set_text(self.text_node, self.paragraph_texts[self.paragraph_index])
+		self.paragraph_index = self.paragraph_index + 1
+	end
+end
