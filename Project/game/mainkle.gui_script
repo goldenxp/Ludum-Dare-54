@@ -58,19 +58,19 @@ function story_continue(self, choice)
 
 	-- Show input buttons
 	if at_fork then
-		if (self.choices_texts[0] ~= nil) then
-			gui.set_visible(self.choice1_node, true)
-			gui.set_text(self.choice1_node, self.choices_texts[0])
-		end
-
 		if (self.choices_texts[1] ~= nil) then
-			gui.set_visible(self.choice2_node, true)
-			gui.set_text(self.choice2_node, self.choices_texts[1])
+			gui.set_visible(self.choice1_node, true)
+			gui.set_text(self.choice1_node, self.choices_texts[1])
 		end
 
 		if (self.choices_texts[2] ~= nil) then
+			gui.set_visible(self.choice2_node, true)
+			gui.set_text(self.choice2_node, self.choices_texts[2])
+		end
+
+		if (self.choices_texts[3] ~= nil) then
 			gui.set_visible(self.choice3_node, true)
-			gui.set_text(self.choice3_node, self.choices_texts[2])
+			gui.set_text(self.choice3_node, self.choices_texts[3])
 		end
 
 		gui.set_visible(self.text_node, false)
@@ -87,8 +87,8 @@ function story_continue(self, choice)
 		end
 		-- Build cache of upcoming options
 		self.choices_texts = {}
-		for _, choice in ipairs(choices) do
-			table.insert(self.choices_texts, choice.text)
+		for j, choice in ipairs(choices) do
+			table.insert(self.choices_texts, j .. ". " .. choice.text)
 		end
 	end
 
