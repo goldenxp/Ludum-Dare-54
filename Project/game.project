@@ -13,7 +13,7 @@ high_dpi = 1
 input_method = HiddenInputField
 
 [project]
-title = Project
+title = Hard Drive
 custom_resources = resources
 dependencies#0 = https://github.com/abadonna/defold-ink/archive/master.zip
 
